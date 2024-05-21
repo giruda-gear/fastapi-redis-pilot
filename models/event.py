@@ -1,5 +1,5 @@
-import redis
 from redis_om import HashModel
+from redis_connection import get_redis
 
 
 class Event(HashModel):
@@ -8,4 +8,4 @@ class Event(HashModel):
     data: str
 
     class Meta:
-        database = redis
+        database = get_redis()

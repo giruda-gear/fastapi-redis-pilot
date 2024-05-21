@@ -5,11 +5,12 @@ from models.event import Event
 from redis_connection import get_redis
 from routers.deliveries import get_state
 
+
 event = APIRouter(prefix="/event")
 
 
 @event.post("/")
-async def dispatch(request: Request, redis = Depends(get_redis)):
+async def dispatch(request: Request, redis=Depends(get_redis)):
     body = await request.json()
     delivery_id = body["delivery_id"]
     event = Event(
@@ -20,7 +21,7 @@ async def dispatch(request: Request, redis = Depends(get_redis)):
         ),
     ).save()
 
-    state = await get_state(delivery_id)
+    state = await get_state(delivery_id, redis)
     new_state = consumers.handle_event(state, event)
     redis.set(f"delivery:{delivery_id}", json.dumps(new_state))
 

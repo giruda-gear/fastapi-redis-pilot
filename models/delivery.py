@@ -1,5 +1,5 @@
-import redis
 from redis_om import HashModel
+from redis_connection import get_redis
 
 
 class Devlivery(HashModel):
@@ -7,4 +7,4 @@ class Devlivery(HashModel):
     notes: str = ""
 
     class Meta:
-        database = redis
+        database = get_redis()

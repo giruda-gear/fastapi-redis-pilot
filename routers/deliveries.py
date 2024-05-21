@@ -10,7 +10,7 @@ deliveries = APIRouter(prefix="/deliveries")
 
 
 @deliveries.get("/{pk}/status")
-async def get_state(pk: str, redis = Depends(get_redis)):
+async def get_state(pk: str, redis=Depends(get_redis)):
     state = redis.get(f"delivery:{pk}")
 
     if state is None:
@@ -20,7 +20,7 @@ async def get_state(pk: str, redis = Depends(get_redis)):
 
 
 @deliveries.post("/create")
-async def create(request: Request):
+async def create(request: Request, redis=Depends(get_redis)):
     body = await request.json()
     delivery = Devlivery(
         budget=body["data"]["budget"],
@@ -35,6 +35,6 @@ async def create(request: Request):
     ).save()
 
     state = consumers.handle_event({}, event)
-    get_redis().set(f"delivery:{delivery.pk}", json.dumps(state))
+    redis.set(f"delivery:{delivery.pk}", json.dumps(state))
 
     return state
