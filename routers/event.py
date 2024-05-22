@@ -19,10 +19,11 @@ async def dispatch(request: Request, redis=Depends(get_redis)):
         data=json.dumps(
             body["data"],
         ),
-    ).save()
+    )
 
     state = await get_state(delivery_id, redis)
     new_state = consumers.handle_event(state, event)
+    event.save()
     redis.set(f"delivery:{delivery_id}", json.dumps(new_state))
 
     return new_state
